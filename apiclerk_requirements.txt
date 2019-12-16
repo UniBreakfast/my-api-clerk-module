@@ -1,0 +1,51 @@
+
+класс Route
+  Должен создаваться из объекта со свойствами POST, GET, PUT, DELETE,
+    значениями которых являются функции
+  Должен уметь мёржиться с другим таким объектом
+
+На старте сервера api-модуль загружает все роуты из всех вложенных файлов, собирая их в один объект-дерево
+    Сначала сканируется папка и подпапки, составляется дерево файлов-роутов
+    Затем каждый найденный файл-роут импортируется,
+    из импортированного объекта создаётся роут и добавляется в объект-дерево
+
+
+
+
+
+
+
+
+
+
+obj = {
+  alpha: {
+    any: {
+      corgy: "fat",
+      taksa: "flat"
+    },
+    beny: "dead",
+    raba: {
+      mucho: {
+        better: "YES"
+      }
+    },
+  },
+  beta: 7,
+  gamma: {
+    reeba: true,
+    zooty: "true"
+  }
+}
+
+write a function fn(str) { ... }
+// obj is in fn's closure
+
+str0 = "beta"
+//should return 7
+str1 = "gamma/reeba/foo"
+// should return false
+str2 = "alpha/raba/mucho/better"
+// should return "YES"
+str3 = "alpha/raba/mucho"
+// should return false
