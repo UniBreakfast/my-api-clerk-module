@@ -9,7 +9,7 @@ const sessions = [{id: 1, token: 'abc'}, {id: 2, token: 'def'}],
       }
 
 require('.')({method: 'POST', url: '/api/user', socket: {_server: {sesClerk}},
-  headers: {custom: 'token', session: '{"sid":2,"token":"def"}'}},
+  headers: {custom: 'token', ses: '{"sid":2,"token":"def"}'}},
     {payload: 'content'}).then(console.log).catch(console.log)
 
 setTimeout(()=>{}, 1e8)
