@@ -6,19 +6,7 @@ wholeBody = (req, parts=[])=> new Promise((resolve, reject)=>
   req.on('error', reject).on('data', part => parts.push(part))
     .on('end', ()=> resolve(Buffer.concat(parts).toString('utf8')))),
 
-api = {
-  'projectx/sub/news': {
-    get(query, response, dataSrc) {
-      response.got = {query}
-    },
-    post_s(query, response, dataSrc) {
-      response.posted = {query}
-    },
-    delete_p(query, response, dataSrc) {
-      response.deleted = {query}
-    }
-  }
-},
+api = require('./api'),
 
 handle = async req => {
   const response = {errors: []},
@@ -53,17 +41,6 @@ handle = async req => {
     delete response.sesuserid
   }
   return response
-}
-
-for (const route in api) {
-  const handlers = api[route]
-  for (const key in handlers) {
-    const [, method, ses, pass] = key.match(/([^_]+)_?(s)?(p)?/),
-          handler = handlers[method.toUpperCase()] = handlers[key]
-    if (pass) handler.pass = handler.ses = true
-    else if (ses) handler.ses = true
-    delete handlers[key]
-  }
 }
 
 module.exports = {handle}

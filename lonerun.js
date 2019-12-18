@@ -17,14 +17,20 @@ const sessions = [{id: 1, token: 'abc'}, {id: 2, token: 'def'}],
     { assign } = Object,
       req = new (require('events')),
       ses = '{"sid":2,"token":"def"}',
-      pass = 'jeronimo'
+      pass = 'jeronimo',
+      apiClerk = require('.')
 
-assign(req, {method: 'DELETE', url: encodeURI('/api/projectx/sub/news?a=1 2&x=7'), socket: {_server: {sesClerk, passClerk}}, headers: {pass, ses}})
+assign(req, {method: 'DELETE', url: encodeURI('/api/studym/cased/news?a=1 2&x=7'), socket: {_server: {sesClerk, passClerk}}, headers: {pass, ses}})
 
-require('.').handle(req,
-    {payload: 'content'}).then(console.log).catch(console.log)
+apiClerk.handle(req).then(console.log).catch(console.log)
 
 req.emit('data', Buffer.from(JSON.stringify({x:1, y:2})))
 req.emit('end', '')
 
+
+setTimeout(()=> {
+  apiClerk.handle(req).then(console.log).catch(console.log)
+  req.emit('data', Buffer.from(JSON.stringify({x:1, y:2})))
+  req.emit('end', '')
+}, 1e3)
 setTimeout(()=>{}, 1e8)
