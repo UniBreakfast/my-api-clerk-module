@@ -1,6 +1,10 @@
 
 const
-c = console.log,
+c = console.log, { assign, fromEntries } = Object,
+
+wholeBody = (req, parts=[])=> new Promise((resolve, reject)=>
+  req.on('error', reject).on('data', part => parts.push(part))
+    .on('end', ()=> resolve(Buffer.concat(parts).toString('utf8')))),
 
 api = {
   'projectx/sub/news': {
@@ -16,25 +20,39 @@ api = {
   }
 },
 
-findHandler =(method, route)=>
-
 handle = async req => {
   const response = {errors: []},
       { url, method, headers } = req,
       [, route, queryString ] = url.match(/\/api\/([\/\w]+)\??(.*$)/),
       apiHandler = api[route] && api[route][method]
-  if (!apiHandler) response.errors.push('No api found at '+url)
+  if (!apiHandler)
+    response.errors.push(`No route found for ${method} request to ${url}`)
   else {
-    const { sesClerk, passClerk, dataClerk } = req.socket._server
+    const { sesClerk, passClerk, dataSrc } = req.socket._server
     if (apiHandler.ses) {
       if (!headers.ses) response.errors.push('No session to confirm')
       else {
         try { var ses = JSON.parse(headers.ses) }
         catch { response.errors.push('Session header is not a valid JSON') }
       }
-      ////////////////////////////////
+      if (!sesClerk) response.errors.push('Session cannot be confirmed')
+      else if (!response.errors[0]) sesClerk.check(ses, response)
     }
+    if (apiHandler.pass) {
+      const { pass } = headers
+      if (!pass) response.errors.push('Password required to confirm request')
+      if (!passClerk) response.errors.push('Password cannot be confirmed')
+      else if (!response.errors[0]) passClerk.check(pass, response)
+    }
+    if (!response.errors[0]) {
+      const query = !queryString ? {} : fromEntries(decodeURI(queryString)
+        .split('&').map(pair => pair.split('=')))
+      assign(query, JSON.parse(await wholeBody(req) || '{}'))
+      apiHandler(query, response, dataSrc)
+    }
+    delete response.sesuserid
   }
+  return response
 }
 
 for (const route in api) {
@@ -47,26 +65,5 @@ for (const route in api) {
     delete handlers[key]
   }
 }
-debugger
-module.exports = async ({method, url, socket, headers}, body, dev)=> {
-  const { _server: { sesClerk }={} } = socket || {}
 
-  console.log({method, url, headers, body})
-
-  url = url.slice(5)
-
-  if (url == 'guest') return [{x: 2, y: 4}, {x: 7, y: 11}]
-
-  if (url == 'user') {
-    const ses = JSON.parse(headers.ses)
-
-
-    if (sesClerk.check(ses))
-      return {personal: "info"}
-
-  }
-
-
-  // return {response: 'from api'}
-  throw 'no such api'
-}
+module.exports = {handle}
