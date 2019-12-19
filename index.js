@@ -33,8 +33,8 @@ handle = async req => {
       else if (!response.errors[0]) passClerk.check(pass, response)
     }
     if (!response.errors[0]) {
-      const query = !queryString ? {} : fromEntries(decodeURI(queryString)
-        .split('&').map(pair => pair.split('=')))
+      const query = queryString? fromEntries(decodeURI(queryString)
+        .split('&').map(pair => pair.split('='))) : {}
       assign(query, JSON.parse(await wholeBody(req) || '{}'))
       apiHandler(query, response, dataSrc)
     }

@@ -6,7 +6,7 @@ api = {},
 
 gather = async path => {
   const
-  dir = await fsp.readdir(path),
+  dir = (await fsp.readdir(path)).filter(name => name[0]!='.'),
   objs = await Promise.all(dir.map(async name => {
     const
     next = path+'/'+name
