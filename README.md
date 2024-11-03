@@ -1,4 +1,5 @@
-# my-api-clerk-module
+# [my-api-clerk-module](https://github.com/unibreakfast/my-api-clerk-module)
+
 ## an api submodule part of [my-modular-server](https://github.com/UniBreakfast/my-modular-server) project
 
 ![image](https://github.com/user-attachments/assets/a17d2583-04cb-43bd-a074-9945ee119577)
